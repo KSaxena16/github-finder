@@ -1,74 +1,85 @@
-$(document).ready(function() {
-  $('#searchUser').on('keyup', function(e) {
-    let username = e.target.value;
+//When document finishes loading
+$(document).ready(function(){
+	//When user starts to type, we catch that using 'keyup'
+	$('#searchUser').on('keyup', function(event){
+		console.log('keypressed');
+		//Get what user types in
+		console.log(event.target.value);
+		var userName = event.target.value;
+ 		//Make request to Github API
+		$.ajax({
+			url: "https://api.github.com/users/" + userName,
+			data:{
+				client_id: 'd14b24ce6b00a8e9130f',
+				client_secret: 'e2ec904eab727cc734753142601c7d2b4a5f272e'
+			}
+			//.done is the returned promise which handles the callback function which passes the data
+		}).done(function(user){
+ 			$.ajax({
+				url: "https://api.github.com/users/" + userName + "/repos",
+				data:{
+				client_id: 'd14b24ce6b00a8e9130f',
+				client_secret: 'e2ec904eab727cc734753142601c7d2b4a5f272e',
+				sort: 'creates: asc',
+				per_page: 5
+				}
+ 			}).done(function(repos){
+				//Loop through the repos array
+				$.each(repos, function(index, repo){
+					$('#repos').append(`
+							<div class = "well">
+								<div class = "row">
+								<div class = "col-md-7">
+									<strong>${repo.name}</strong>: ${repo.description}
+								</div>
+								<div class = "col-md-3">
+									<span class="label label-default">Forks: ${repo.forks_count}</span>
+									<span class="label label-primary">Watchers: ${repo.watchers_count}</span>
+									<span class="label label-success">Stars: ${repo.stargazers_count}</span>
+ 								</div>
+								<div class = "col-md-2">
+										<a href = "${repo.html_url}" target = "_blank" class = "btn btn-default">Repo page</a>
+								</div>
+								</div>
+							</div>
+						`);
+				});
+				console.log(repos);
+ 			});
+			//console.log(user);
+			//es6 syntax using back ticks, you can write html directly without concatenating
+			//variables in es6 within curly braces
+			$('#profile').html(`
+				<div class="panel panel-default">
+  					<div class="panel-heading">
+    					<h3 class="panel-title">${user.name}</h3>
+  					</div>
+  					<div class="panel-body">
+    					<div class = "row">
+    						<div class = "col-md-3">
+    							<img class = "thumbnail avatar" src = "${user.avatar_url}">
+    							<a target="_blank" href = "${user.html_url}" class = "btn btn-primary btn-block">View Profile</a>
+    						</div>
+    						<div class = "col-md-9">
+    							<span class="label label-default">Public Repos: ${user.public_repos}</span>
+								<span class="label label-primary">Public Gists: ${user.public_gists}</span>
+								<span class="label label-success">Followers: ${user.public_followers}</span>
+								<span class="label label-info">Following: ${user.public_following}</span>
 
-    //Make request to Github
-    $.ajax({
-      url:'https://api.github.com/users/'+username,
-      data:{
-        client_id:'d14b24ce6b00a8e9130f',
-        client_secret:'e2ec904eab727cc734753142601c7d2b4a5f272e'
-      }
-    }).done(function(user) {
-      $.ajax({
-        url:'https://api.github.com/users/'+username+'/repos'
-        data:{
-          client_id:'d14b24ce6b00a8e9130f',
-          client_secret:'e2ec904eab727cc734753142601c7d2b4a5f272e',
-          sort: 'created: asc',
-          per_page: 5
-        }
-      }).done(function(repos) {
-        $.each(repos, function(index, repo) {
-          $('#repos').append(`
-            <div class="well">
-              <div class="row">
-                <div class="col-md-7">
-                  <strong>${repo.name}</strong>: ${repo.description}
-                </div>
-                <div class="col-md-3">
-                  <span class="label label-default">Forks: ${repo.forks_count}</span>
-                  <span class="label label-primary">Watchers: ${repo.watchers_count}</span>
-                  <span class="label label-success">Stars: ${repo.stargazers_count}</span>
-                </div>
-                <div class="col-md-2">
-                  <a href="${repo.html_url}" target="_blank" class="btn btn-default">Repo Page</a>
-                </div>
-              </div>
-            </div>
-            `);
-        });
-      });
-      $('#profile').html(`
-        <div class="panel panel-default">
-          <div class="panel-heading">
-          <h3 class="panel-title">${user.name}</h3>
-          </div>
-          <div class="panel-body">
-            <div class="row">
-              <div class=col-md-3>
-                <img class="thumbnail avatar" src="${user.avatar_url}">
-                <a target="_blank" class="btn btn-primary btn-block" href="${user.html_url}">View Profile</a>
-              </div>
-              <div class="col-md-9">
-              <span class="label label-default">Public Repos: ${user.public_repos}</span>
-              <span class="label label-primary">Public Gists: ${user.public_gists}</span>
-              <span class="label label-success">Followers: ${user.followers}</span>
-              <span class="label label-info">Following: ${user.folloing}</span>
-              <br><br>
-              <ul class="list-group">
-                <li class="list-group-item">Company: ${user.company}</li>
-                <li class="list-group-item">Website/blog: ${user.blog}</li>
-                <li class="list-group-item">Location: ${user.location}</li>
-                <li class="list-group-item">Member Since: ${user.created_at}</li>
-              </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <h3 class="page-header">Latest Repos</h3>
-        <div id="repos"></div>
-        `);
-    });
-  });
+	    						<br><br>
+	    						<ul class = "list-group">
+	    							<li class = "list-group-item">Company: ${user.company}</li>
+	    							<li class = "list-group-item">Website/blog: ${user.blog}</li>
+	    							<li class = "list-group-item">Location: ${user.location}</li>
+	    							<li class = "list-group-item">Member Since: ${user.created_at}</li>
+	    						</ul>
+    						</div>
+    					</div>
+ 					</div>
+				</div>
+ 				<h3 class = "page-header">Latest Repos</h3>
+				<div id = "repos"></div>
+ 				`);
+		});
+	});
 });
