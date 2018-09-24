@@ -6,24 +6,27 @@ $(document).ready(function(){
 		//Get what user types in
 		console.log(event.target.value);
 		var userName = event.target.value;
- 		//Make request to Github API
+
+		//Make request to Github API
 		$.ajax({
 			url: "https://api.github.com/users/" + userName,
 			data:{
-				client_id: 'd14b24ce6b00a8e9130f',
-				client_secret: 'e2ec904eab727cc734753142601c7d2b4a5f272e'
+				client_id: '46e9a037672cca81d3da',
+				client_secret: '2ed4aaa00b415311599d0038b59533f08a05f838'
 			}
 			//.done is the returned promise which handles the callback function which passes the data
 		}).done(function(user){
- 			$.ajax({
+
+			$.ajax({
 				url: "https://api.github.com/users/" + userName + "/repos",
 				data:{
-				client_id: 'd14b24ce6b00a8e9130f',
-				client_secret: 'e2ec904eab727cc734753142601c7d2b4a5f272e',
+				client_id: '46e9a037672cca81d3da',
+				client_secret: '2ed4aaa00b415311599d0038b59533f08a05f838',
 				sort: 'creates: asc',
 				per_page: 5
 				}
- 			}).done(function(repos){
+
+			}).done(function(repos){
 				//Loop through the repos array
 				$.each(repos, function(index, repo){
 					$('#repos').append(`
@@ -36,7 +39,8 @@ $(document).ready(function(){
 									<span class="label label-default">Forks: ${repo.forks_count}</span>
 									<span class="label label-primary">Watchers: ${repo.watchers_count}</span>
 									<span class="label label-success">Stars: ${repo.stargazers_count}</span>
- 								</div>
+
+								</div>
 								<div class = "col-md-2">
 										<a href = "${repo.html_url}" target = "_blank" class = "btn btn-default">Repo page</a>
 								</div>
@@ -45,7 +49,8 @@ $(document).ready(function(){
 						`);
 				});
 				console.log(repos);
- 			});
+
+			});
 			//console.log(user);
 			//es6 syntax using back ticks, you can write html directly without concatenating
 			//variables in es6 within curly braces
@@ -65,7 +70,7 @@ $(document).ready(function(){
 								<span class="label label-primary">Public Gists: ${user.public_gists}</span>
 								<span class="label label-success">Followers: ${user.public_followers}</span>
 								<span class="label label-info">Following: ${user.public_following}</span>
-
+    						
 	    						<br><br>
 	    						<ul class = "list-group">
 	    							<li class = "list-group-item">Company: ${user.company}</li>
@@ -77,9 +82,11 @@ $(document).ready(function(){
     					</div>
  					</div>
 				</div>
- 				<h3 class = "page-header">Latest Repos</h3>
+
+				<h3 class = "page-header">Latest Repos</h3>
 				<div id = "repos"></div>
- 				`);
+
+				`);
 		});
 	});
 });
